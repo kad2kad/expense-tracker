@@ -141,12 +141,26 @@ Every query is scoped by `where: { userId: session.user.id }`.
 1. ✅ **M0 — Scaffold:** Next.js 16 + TS + Tailwind v4, Prisma 6 + SQLite, env setup.
 2. ✅ **M1 — Auth:** Auth.js credentials (email/password), signup seeds default
    categories, JWT sessions, protected routes via middleware, nav shell + dashboard.
-3. **M2 — Add Transaction (end-to-end):** full form incl. details toggle, image
-   upload (local), server action, persisted + visible in a raw list.  ← next
-4. **M3 — History:** daily/monthly/yearly grouping, period nav, card layout, subtotals.
-5. **M4 — Reports:** KPIs + Recharts, current-vs-previous comparison.
-6. **M5 — Exports:** CSV, xlsx, PDF per timeframe.
-7. **M6 — Polish:** dashboard home, empty states, mobile nav, deploy (Neon + Vercel).
+3. ✅ **M2 — Add Transaction (end-to-end):** kind toggle → dynamic category chips
+   (+ inline custom), formatted IDR amount, note, date, receipt upload (local disk),
+   expandable details (location / with-who / debt counterparty·due·settled), Zod
+   server action, dashboard shows real month totals + recent list.
+4. ✅ **M3 — History:** URL-driven daily/monthly/yearly grouping, period nav
+   (prev/next + jump-to-date), grouped cards with per-period in/out/net subtotals,
+   shared TxRow component. Export buttons deferred to M5.
+5. ✅ **M4 — Reports:** month period nav, KPI tiles (in/out/net/savings-rate),
+   current-vs-previous deltas + biggest category, Recharts category donut +
+   6-month income/expense trend bars (React 19-native Recharts 3).
+6. ✅ **M5 — Exports:** CSV (BOM + escaping), Excel (.xlsx via ExcelJS, formatted),
+   PDF (server-rendered via @react-pdf/renderer) — one `/api/export` route scoped to
+   the current History view/anchor, wired to export buttons on the History screen.
+7. **M6 — Polish:** dashboard home, empty states, mobile nav, deploy (Neon + Vercel).  ← in progress
+   - ✅ Edit & delete transactions (shared form in create/edit mode, ownership-checked
+     update/delete actions, clickable rows → `/transactions/[id]`, confirm-on-delete).
+   - ✅ Deploy prep: schema → PostgreSQL, Vercel Blob receipt storage (local-disk
+     fallback in dev), `postinstall: prisma generate`, `vercel.json` build runs
+     `prisma migrate deploy`, `.env.example`, `DEPLOY.md`. Build passes.
+   - ⏳ Deploy execution: needs your Neon + Vercel accounts — see DEPLOY.md.
 
 > **Note — Prisma pinned to v6:** Prisma 7 (released recently) removed the classic
 > `url = env(...)` datasource config in favour of driver adapters + `prisma.config.ts`.

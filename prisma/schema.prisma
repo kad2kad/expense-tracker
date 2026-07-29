@@ -1,14 +1,13 @@
 // Expense Tracker schema.
-// Note: `kind` is stored as String (not a Prisma enum) because SQLite does not
-// support enums. Allowed values are enforced in TS via the TxKind union + Zod.
-// See src/lib/constants.ts.
+// Note: `kind` is stored as String (not a Prisma enum). Allowed values are
+// enforced in TS via the TxKind union + Zod. See src/lib/constants.ts.
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 

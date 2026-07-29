@@ -9,6 +9,7 @@ const PROTECTED_PREFIXES = [
   "/history",
   "/report",
   "/settings",
+  "/transactions",
 ];
 
 export const authConfig = {
