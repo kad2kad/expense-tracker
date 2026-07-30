@@ -95,8 +95,12 @@ model Transaction {
   date     DateTime // user-chosen transaction date
   imageUrl String? // receipt photo path/url
 
-  categoryId String
-  category   Category @relation(fields: [categoryId], references: [id])
+  // A transaction either references a saved Category, or carries a one-off
+  // free-text `customName` (used when the user picks "Custom"). Custom labels
+  // are NOT saved as reusable categories.
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
+  customName String?
 
   // optional "Add details" fields
   location String?

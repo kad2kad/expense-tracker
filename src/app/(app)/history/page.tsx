@@ -58,6 +58,7 @@ export default async function HistoryPage({
       note: t.note,
       date: t.date,
       counterparty: t.counterparty,
+      customName: t.customName,
       category: t.category,
     });
   }

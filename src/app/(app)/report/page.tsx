@@ -72,7 +72,9 @@ export default async function ReportPage({
   const savingsRate = income > 0 ? Math.round((net / income) * 100) : null;
 
   // Resolve category names/colors for the expense breakdown.
-  const catIds = expenseByCat.map((r) => r.categoryId);
+  const catIds = expenseByCat
+    .map((r) => r.categoryId)
+    .filter((id): id is string => id !== null);
   const cats = await prisma.category.findMany({
     where: { id: { in: catIds } },
     select: { id: true, name: true, color: true },
@@ -80,8 +82,8 @@ export default async function ReportPage({
   const catMap = new Map(cats.map((c) => [c.id, c]));
   const slices: CategorySlice[] = expenseByCat
     .map((r) => ({
-      name: catMap.get(r.categoryId)?.name ?? "Other",
-      color: catMap.get(r.categoryId)?.color ?? null,
+      name: catMap.get(r.categoryId ?? "")?.name ?? "Custom",
+      color: catMap.get(r.categoryId ?? "")?.color ?? null,
       value: Number(r._sum.amount ?? 0),
     }))
     .sort((a, b) => b.value - a.value);

@@ -40,7 +40,7 @@ export async function getExportData(
   const rows: ExportRow[] = txs.map((t) => ({
     date: toISODate(t.date),
     kind: TX_KIND_LABELS[t.kind as TxKind] ?? t.kind,
-    category: t.category.name,
+    category: t.category?.name ?? t.customName ?? "Custom",
     note: t.note ?? "",
     amount: Number(t.amount),
     direction: directionOf(t.kind),

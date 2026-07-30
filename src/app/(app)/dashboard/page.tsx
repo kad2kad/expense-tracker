@@ -47,6 +47,7 @@ export default async function DashboardPage() {
     note: t.note,
     date: t.date,
     counterparty: t.counterparty,
+    customName: t.customName,
     category: t.category,
   }));
 

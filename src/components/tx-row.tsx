@@ -10,7 +10,8 @@ export type TxRowData = {
   note: string | null;
   date: Date;
   counterparty?: string | null;
-  category: { name: string; icon: string | null; color?: string | null };
+  customName?: string | null;
+  category: { name: string; icon: string | null; color?: string | null } | null;
 };
 
 export function TxRow({
@@ -22,8 +23,9 @@ export function TxRow({
   showDate?: boolean;
   href?: string;
 }) {
-  const Icon = categoryIcon(tx.category.name);
-  const tint = tx.category.color ?? "#2196f3";
+  const label = tx.category?.name ?? tx.customName ?? "Custom";
+  const Icon = categoryIcon(label);
+  const tint = tx.category?.color ?? "#2196f3";
 
   const sign = tx.kind === "INCOME" ? "+" : tx.kind === "EXPENSE" ? "−" : "";
   const color =
@@ -61,7 +63,7 @@ export function TxRow({
       </span>
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-semibold text-ink">
-          {tx.category.name}
+          {label}
           {tx.note ? (
             <span className="font-normal text-ink-muted"> · {tx.note}</span>
           ) : null}

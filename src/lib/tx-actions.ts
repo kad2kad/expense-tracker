@@ -20,27 +20,32 @@ async function requireUserId(): Promise<string> {
   return session.user.id;
 }
 
-/** Resolve to a category id: inline custom wins, else the picked (owned) one. */
+type ResolvedCategory =
+  | { categoryId: string; customName: null }
+  | { categoryId: null; customName: string }
+  | { error: string };
+
+/**
+ * Resolve the category for a transaction.
+ * - A typed custom name is stored as a one-off `customName` on the transaction
+ *   (NOT saved as a reusable Category).
+ * - Otherwise the picked category id is validated against the user + kind.
+ */
 async function resolveCategory(
   userId: string,
   kind: TxKind,
   categoryId: string | undefined,
   customCategory: string | undefined,
-): Promise<{ id: string } | { error: string }> {
+): Promise<ResolvedCategory> {
   if (customCategory) {
-    const category = await prisma.category.upsert({
-      where: { userId_kind_name: { userId, kind, name: customCategory } },
-      update: {},
-      create: { userId, kind, name: customCategory, isDefault: false },
-    });
-    return { id: category.id };
+    return { categoryId: null, customName: customCategory };
   }
   const owned = await prisma.category.findFirst({
     where: { id: categoryId, userId, kind },
     select: { id: true },
   });
   if (!owned) return { error: "Invalid category for this type" };
-  return { id: owned.id };
+  return { categoryId: owned.id, customName: null };
 }
 
 export async function createTransaction(
@@ -73,7 +78,8 @@ export async function createTransaction(
       kind,
       amount: parseAmount(data.amountRaw)!,
       currency: DEFAULT_CURRENCY,
-      categoryId: cat.id,
+      categoryId: cat.categoryId,
+      customName: cat.customName,
       note: data.note ?? null,
       date: toDate(data.date),
       imageUrl,
@@ -130,7 +136,8 @@ export async function updateTransaction(
     data: {
       kind,
       amount: parseAmount(data.amountRaw)!,
-      categoryId: cat.id,
+      categoryId: cat.categoryId,
+      customName: cat.customName,
       note: data.note ?? null,
       date: toDate(data.date),
       imageUrl,

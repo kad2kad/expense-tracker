@@ -29,6 +29,7 @@ export type InitialTx = {
   kind: TxKind;
   amount: number;
   categoryId: string;
+  customName: string;
   note: string;
   date: string; // YYYY-MM-DD
   imageUrl: string | null;
@@ -68,7 +69,9 @@ export function AddTransactionForm({
 
   const [kind, setKind] = useState<TxKind>(initial?.kind ?? "EXPENSE");
   const [categoryId, setCategoryId] = useState<string>(initial?.categoryId ?? "");
-  const [customMode, setCustomMode] = useState(false);
+  const [customMode, setCustomMode] = useState(
+    !!initial && !initial.categoryId && !!initial.customName,
+  );
   const [amount, setAmount] = useState(initial ? amountToInput(initial.amount) : "");
   const [showDetails, setShowDetails] = useState(
     !!initial &&
@@ -178,8 +181,9 @@ export function AddTransactionForm({
           <input
             name="customCategory"
             autoFocus
-            placeholder="New category name"
+            placeholder="One-off label (not saved as a category)"
             maxLength={40}
+            defaultValue={initial?.customName ?? ""}
             className="lg-input mt-3 w-full px-3 py-2.5 text-sm"
           />
         )}
