@@ -35,10 +35,20 @@ export default async function DashboardPage() {
   ]);
 
   const sumOf = (k: TxKind) =>
-    byKind.find((r) => r.kind === k)?._sum.amount ?? 0;
+    Number(byKind.find((r) => r.kind === k)?._sum.amount ?? 0);
   const income = sumOf("INCOME");
   const expense = sumOf("EXPENSE");
   const net = income - expense;
+
+  const recentRows = recent.map((t) => ({
+    id: t.id,
+    kind: t.kind,
+    amount: Number(t.amount),
+    note: t.note,
+    date: t.date,
+    counterparty: t.counterparty,
+    category: t.category,
+  }));
 
   return (
     <div className="mx-auto max-w-3xl p-5 md:p-8">
@@ -65,7 +75,7 @@ export default async function DashboardPage() {
           </Link>
         </div>
 
-        {recent.length === 0 ? (
+        {recentRows.length === 0 ? (
           <div className="lg-card flex flex-col items-center p-10 text-center">
             <span className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl lg-inset text-ink-muted">
               <Wallet size={22} />
@@ -81,7 +91,7 @@ export default async function DashboardPage() {
           </div>
         ) : (
           <ul className="lg-card divide-y divide-black/5 overflow-hidden py-1">
-            {recent.map((t) => (
+            {recentRows.map((t) => (
               <TxRow key={t.id} tx={t} href={`/transactions/${t.id}`} />
             ))}
           </ul>

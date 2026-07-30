@@ -42,7 +42,7 @@ export async function getExportData(
     kind: TX_KIND_LABELS[t.kind as TxKind] ?? t.kind,
     category: t.category.name,
     note: t.note ?? "",
-    amount: t.amount,
+    amount: Number(t.amount),
     direction: directionOf(t.kind),
     counterparty: t.counterparty ?? "",
     location: t.location ?? "",

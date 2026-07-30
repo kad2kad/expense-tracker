@@ -40,7 +40,7 @@ export default async function EditTransactionPage({
   const initial: InitialTx = {
     id: tx.id,
     kind: tx.kind as TxKind,
-    amount: tx.amount,
+    amount: Number(tx.amount),
     categoryId: tx.categoryId,
     note: tx.note ?? "",
     date: toISODate(tx.date),

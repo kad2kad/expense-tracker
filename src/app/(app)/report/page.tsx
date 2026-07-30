@@ -61,7 +61,7 @@ export default async function ReportPage({
   ]);
 
   const sumKind = (rows: typeof curr, kind: string) =>
-    rows.find((r) => r.kind === kind)?._sum.amount ?? 0;
+    Number(rows.find((r) => r.kind === kind)?._sum.amount ?? 0);
 
   const income = sumKind(curr, "INCOME");
   const expense = sumKind(curr, "EXPENSE");
@@ -82,7 +82,7 @@ export default async function ReportPage({
     .map((r) => ({
       name: catMap.get(r.categoryId)?.name ?? "Other",
       color: catMap.get(r.categoryId)?.color ?? null,
-      value: r._sum.amount ?? 0,
+      value: Number(r._sum.amount ?? 0),
     }))
     .sort((a, b) => b.value - a.value);
 
@@ -101,8 +101,8 @@ export default async function ReportPage({
     const key = shortMonthLabel(new Date(r.date.getFullYear(), r.date.getMonth(), 1));
     const i = trendIndex.get(key);
     if (i === undefined) continue;
-    if (r.kind === "INCOME") trend[i].income += r.amount;
-    else if (r.kind === "EXPENSE") trend[i].expense += r.amount;
+    if (r.kind === "INCOME") trend[i].income += Number(r.amount);
+    else if (r.kind === "EXPENSE") trend[i].expense += Number(r.amount);
   }
 
   return (

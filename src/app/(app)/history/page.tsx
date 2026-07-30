@@ -54,7 +54,7 @@ export default async function HistoryPage({
     buckets[i].items.push({
       id: t.id,
       kind: t.kind,
-      amount: t.amount,
+      amount: Number(t.amount),
       note: t.note,
       date: t.date,
       counterparty: t.counterparty,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useMemo, useRef, useState } from "react";
+import { useActionState, useRef, useState } from "react";
 import {
   ArrowDownCircle,
   ArrowUpCircle,
@@ -20,7 +20,7 @@ import {
 import type { TxFormState } from "@/lib/tx-form";
 import { TX_KINDS, TX_KIND_LABELS, type TxKind } from "@/lib/constants";
 import { categoryIcon } from "@/lib/category-icons";
-import { formatNumber, parseAmount } from "@/lib/money";
+import { amountToInput, formatAmountInput } from "@/lib/money";
 
 export type CategoryOption = { id: string; name: string; icon: string | null };
 
@@ -69,7 +69,7 @@ export function AddTransactionForm({
   const [kind, setKind] = useState<TxKind>(initial?.kind ?? "EXPENSE");
   const [categoryId, setCategoryId] = useState<string>(initial?.categoryId ?? "");
   const [customMode, setCustomMode] = useState(false);
-  const [amount, setAmount] = useState(initial ? String(initial.amount) : "");
+  const [amount, setAmount] = useState(initial ? amountToInput(initial.amount) : "");
   const [showDetails, setShowDetails] = useState(
     !!initial &&
       !!(initial.location || initial.withWhom || initial.counterparty || initial.dueDate),
@@ -79,11 +79,6 @@ export function AddTransactionForm({
 
   const categories = categoriesByKind[kind] ?? [];
   const err = state.fieldErrors;
-
-  const formatted = useMemo(
-    () => (amount ? formatNumber(parseAmount(amount) ?? 0) : ""),
-    [amount],
-  );
 
   function switchKind(k: TxKind) {
     setKind(k);
@@ -130,11 +125,11 @@ export function AddTransactionForm({
           <span className="pl-3 text-sm font-medium text-ink-muted">Rp</span>
           <input
             name="amount"
-            inputMode="numeric"
+            inputMode="decimal"
             autoComplete="off"
             placeholder="0"
-            value={formatted}
-            onChange={(e) => setAmount(e.target.value.replace(/[^\d]/g, ""))}
+            value={amount}
+            onChange={(e) => setAmount(formatAmountInput(e.target.value))}
             className="w-full bg-transparent px-2 py-2.5 text-lg font-bold text-ink outline-none"
           />
         </div>

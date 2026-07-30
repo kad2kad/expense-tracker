@@ -89,7 +89,7 @@ model Transaction {
   id       String   @id @default(cuid())
   userId   String
   kind     String // TxKind: EXPENSE | INCOME | DEBT_LOAN
-  amount   Int // whole rupiah (IDR has no minor unit), always positive
+  amount   Decimal  @db.Decimal(14, 2) // rupiah, supports cents (e.g. 300000.20), always positive
   currency String   @default("IDR")
   note     String?
   date     DateTime // user-chosen transaction date

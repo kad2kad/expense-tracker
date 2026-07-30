@@ -129,7 +129,7 @@ async function toXlsx(rows: ExportRow[], periodLabel: string): Promise<Buffer> {
   }
 
   // Amount column formatting (column E = 5).
-  ws.getColumn(5).numFmt = '"Rp"#,##0';
+  ws.getColumn(5).numFmt = '"Rp"#,##0.00';
   ws.columns.forEach((col) => {
     let max = 10;
     col.eachCell?.({ includeEmpty: false }, (cell) => {

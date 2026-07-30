@@ -185,8 +185,10 @@ Every query is scoped by `where: { userId: session.user.id }`.
 ---
 
 ## 7. Decisions (locked for v1)
-1. **Currency:** **IDR** (Indonesian Rupiah), single currency app-wide. No decimals —
-   amounts stored as whole rupiah (minor unit = 1), formatted as `Rp1.234.567`.
+1. **Currency:** **IDR** (Indonesian Rupiah), single currency app-wide. Amounts stored
+   as `Decimal(14,2)` rupiah and support cents (e.g. `300000.20`). Input/display use
+   id-ID format (`.` thousands, `,` decimal); cents are only shown when non-zero, e.g.
+   `Rp1.234.567` or `Rp45.000,75`.
 2. **Login:** email/password only. Google added later.
 3. **Receipt photos:** included, stored on local disk in dev; cloud driver at deploy.
 4. **Deploy:** local-first with SQLite; add Vercel + Neon Postgres once core works.
