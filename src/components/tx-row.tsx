@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { formatIDR } from "@/lib/money";
+import { categoryIcon } from "@/lib/category-icons";
 import { TX_KIND_LABELS, type TxKind } from "@/lib/constants";
 
 export type TxRowData = {
@@ -9,7 +10,7 @@ export type TxRowData = {
   note: string | null;
   date: Date;
   counterparty?: string | null;
-  category: { name: string; icon: string | null };
+  category: { name: string; icon: string | null; color?: string | null };
 };
 
 export function TxRow({
@@ -21,13 +22,16 @@ export function TxRow({
   showDate?: boolean;
   href?: string;
 }) {
+  const Icon = categoryIcon(tx.category.name);
+  const tint = tx.category.color ?? "#2196f3";
+
   const sign = tx.kind === "INCOME" ? "+" : tx.kind === "EXPENSE" ? "−" : "";
   const color =
     tx.kind === "INCOME"
-      ? "text-emerald-600"
+      ? "text-success"
       : tx.kind === "EXPENSE"
-        ? "text-red-600"
-        : "text-neutral-500";
+        ? "text-danger"
+        : "text-ink-muted";
 
   const meta = [
     TX_KIND_LABELS[tx.kind as TxKind],
@@ -45,32 +49,39 @@ export function TxRow({
 
   const inner = (
     <>
-      <span className="text-xl">{tx.category.icon ?? "•"}</span>
+      <span
+        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl"
+        style={{
+          color: tint,
+          background: `color-mix(in srgb, ${tint} 14%, white)`,
+          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.9)",
+        }}
+      >
+        <Icon size={18} strokeWidth={2.2} />
+      </span>
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium">
+        <p className="truncate text-sm font-semibold text-ink">
           {tx.category.name}
           {tx.note ? (
-            <span className="font-normal text-neutral-500"> · {tx.note}</span>
+            <span className="font-normal text-ink-muted"> · {tx.note}</span>
           ) : null}
         </p>
-        <p className="text-xs text-neutral-400">{meta}</p>
+        <p className="text-xs text-ink-muted">{meta}</p>
       </div>
-      <span className={`shrink-0 text-sm font-semibold ${color}`}>
+      <span className={`shrink-0 text-sm font-bold ${color}`}>
         {sign}
         {formatIDR(tx.amount)}
       </span>
     </>
   );
 
-  const base = "flex items-center gap-3 bg-white px-4 py-3 dark:bg-neutral-900";
+  const base =
+    "flex items-center gap-3 px-4 py-3 transition-colors";
 
   return (
     <li>
       {href ? (
-        <Link
-          href={href}
-          className={`${base} transition hover:bg-neutral-50 dark:hover:bg-neutral-800/60`}
-        >
+        <Link href={href} className={`${base} hover:bg-primary-light/40`}>
           {inner}
         </Link>
       ) : (

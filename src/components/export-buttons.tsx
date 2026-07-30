@@ -1,11 +1,12 @@
 "use client";
 
+import { FileText, FileSpreadsheet, FileType, type LucideIcon } from "lucide-react";
 import type { View } from "@/lib/history";
 
-const FORMATS: { key: string; label: string; icon: string }[] = [
-  { key: "csv", label: "CSV", icon: "📄" },
-  { key: "xlsx", label: "Excel", icon: "📊" },
-  { key: "pdf", label: "PDF", icon: "📕" },
+const FORMATS: { key: string; label: string; icon: LucideIcon }[] = [
+  { key: "csv", label: "CSV", icon: FileText },
+  { key: "xlsx", label: "Excel", icon: FileSpreadsheet },
+  { key: "pdf", label: "PDF", icon: FileType },
 ];
 
 export function ExportButtons({
@@ -19,16 +20,17 @@ export function ExportButtons({
 }) {
   return (
     <div className="flex items-center gap-2">
-      <span className="text-xs text-neutral-500">Export:</span>
+      <span className="text-xs font-medium text-ink-muted">Export:</span>
       {FORMATS.map((f) => {
+        const Icon = f.icon;
         const href = `/api/export?format=${f.key}&view=${view}&anchor=${anchor}`;
         if (disabled) {
           return (
             <span
               key={f.key}
-              className="cursor-not-allowed rounded-lg border border-neutral-200 px-2.5 py-1 text-xs text-neutral-300 dark:border-neutral-800 dark:text-neutral-600"
+              className="flex cursor-not-allowed items-center gap-1 rounded-lg px-2.5 py-1 text-xs text-ink-muted/40"
             >
-              {f.icon} {f.label}
+              <Icon size={13} /> {f.label}
             </span>
           );
         }
@@ -37,9 +39,9 @@ export function ExportButtons({
             key={f.key}
             href={href}
             download
-            className="rounded-lg border border-neutral-300 px-2.5 py-1 text-xs font-medium transition hover:bg-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-800"
+            className="lg-raised flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-semibold text-ink"
           >
-            {f.icon} {f.label}
+            <Icon size={13} strokeWidth={2.2} /> {f.label}
           </a>
         );
       })}

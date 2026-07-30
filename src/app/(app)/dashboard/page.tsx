@@ -1,4 +1,11 @@
 import Link from "next/link";
+import {
+  ArrowDownCircle,
+  ArrowUpCircle,
+  Plus,
+  Scale,
+  Wallet,
+} from "lucide-react";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { formatIDR } from "@/lib/money";
@@ -23,7 +30,7 @@ export default async function DashboardPage() {
       where: { userId },
       orderBy: [{ date: "desc" }, { createdAt: "desc" }],
       take: 8,
-      include: { category: { select: { name: true, icon: true } } },
+      include: { category: { select: { name: true, icon: true, color: true } } },
     }),
   ]);
 
@@ -34,12 +41,10 @@ export default async function DashboardPage() {
   const net = income - expense;
 
   return (
-    <div className="mx-auto max-w-3xl p-6">
-      <header className="mb-8">
-        <h1 className="text-2xl font-semibold tracking-tight">Hi {name} 👋</h1>
-        <p className="mt-1 text-sm text-neutral-500">
-          Your cash flow this month.
-        </p>
+    <div className="mx-auto max-w-3xl p-5 md:p-8">
+      <header className="mb-7">
+        <h1 className="text-2xl font-bold tracking-tight text-ink">Hi {name}</h1>
+        <p className="mt-1 text-sm text-ink-muted">Your cash flow this month.</p>
       </header>
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -50,24 +55,32 @@ export default async function DashboardPage() {
 
       <section className="mt-8">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold">Recent</h2>
-          <Link href="/add" className="text-sm font-medium text-neutral-500 hover:underline">
-            + Add
+          <h2 className="text-sm font-bold text-ink">Recent</h2>
+          <Link
+            href="/add"
+            className="flex items-center gap-1 text-sm font-semibold text-primary hover:text-primary-dark"
+          >
+            <Plus size={16} strokeWidth={2.5} />
+            Add
           </Link>
         </div>
 
         {recent.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-neutral-300 p-8 text-center dark:border-neutral-700">
-            <p className="text-sm text-neutral-500">No transactions yet.</p>
+          <div className="lg-card flex flex-col items-center p-10 text-center">
+            <span className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl lg-inset text-ink-muted">
+              <Wallet size={22} />
+            </span>
+            <p className="text-sm text-ink-muted">No transactions yet.</p>
             <Link
               href="/add"
-              className="mt-4 inline-block rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
+              className="lg-primary mt-4 inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold"
             >
-              ➕ Add your first transaction
+              <Plus size={16} strokeWidth={2.5} />
+              Add your first transaction
             </Link>
           </div>
         ) : (
-          <ul className="divide-y divide-neutral-200 overflow-hidden rounded-2xl border border-neutral-200 dark:divide-neutral-800 dark:border-neutral-800">
+          <ul className="lg-card divide-y divide-black/5 overflow-hidden py-1">
             {recent.map((t) => (
               <TxRow key={t.id} tx={t} href={`/transactions/${t.id}`} />
             ))}
@@ -87,16 +100,28 @@ function StatCard({
   value: string;
   tone: "in" | "out" | "net";
 }) {
-  const color =
-    tone === "in"
-      ? "text-emerald-600"
-      : tone === "out"
-        ? "text-red-600"
-        : "text-neutral-900 dark:text-white";
+  const config = {
+    in: { color: "text-success", Icon: ArrowUpCircle, tint: "#22b07d" },
+    out: { color: "text-danger", Icon: ArrowDownCircle, tint: "#ef5f5f" },
+    net: { color: "text-ink", Icon: Scale, tint: "#2196f3" },
+  }[tone];
+  const { Icon } = config;
+
   return (
-    <div className="rounded-2xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
-      <p className="text-xs font-medium text-neutral-500">{label}</p>
-      <p className={`mt-2 text-2xl font-semibold ${color}`}>{value}</p>
+    <div className="lg-card p-5">
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-semibold text-ink-muted">{label}</p>
+        <span
+          className="flex h-8 w-8 items-center justify-center rounded-xl"
+          style={{
+            color: config.tint,
+            background: `color-mix(in srgb, ${config.tint} 14%, white)`,
+          }}
+        >
+          <Icon size={16} strokeWidth={2.4} />
+        </span>
+      </div>
+      <p className={`mt-3 text-2xl font-bold ${config.color}`}>{value}</p>
     </div>
   );
 }

@@ -160,7 +160,12 @@ Every query is scoped by `where: { userId: session.user.id }`.
    - ✅ Deploy prep: schema → PostgreSQL, Vercel Blob receipt storage (local-disk
      fallback in dev), `postinstall: prisma generate`, `vercel.json` build runs
      `prisma migrate deploy`, `.env.example`, `DEPLOY.md`. Build passes.
-   - ⏳ Deploy execution: needs your Neon + Vercel accounts — see DEPLOY.md.
+   - ✅ Deploy execution: live on Vercel + Neon + Blob, verified in production.
+   - ✅ UI revamp: "Liquid Glass" design system on Material Design colors
+     (Blue 500 #2196F3 / Ink #212121 / white surfaces). Solid frosted surfaces
+     with layered soft shadows + top highlight (`lg-card`/`lg-inset`/`lg-raised`/
+     `lg-primary`/`lg-input` in globals.css). All emoji replaced with lucide-react
+     icons (nav, categories via name→icon map, buttons, headings). Light-first.
 
 > **Note — Prisma pinned to v6:** Prisma 7 (released recently) removed the classic
 > `url = env(...)` datasource config in favour of driver adapters + `prisma.config.ts`.

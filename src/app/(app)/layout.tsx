@@ -15,9 +15,9 @@ export default async function AppLayout({
   const userLabel = session.user.name ?? session.user.email ?? "Account";
 
   return (
-    <div className="flex min-h-dvh bg-neutral-50 dark:bg-neutral-950">
+    <div className="flex min-h-dvh">
       <Nav userLabel={userLabel} />
-      <main className="flex-1 pb-20 md:pb-0">{children}</main>
+      <main className="flex-1 pb-24 md:pb-0">{children}</main>
     </div>
   );
 }

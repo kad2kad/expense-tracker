@@ -38,7 +38,10 @@ export function CategoryDonut({ data }: { data: CategorySlice[] }) {
           nameKey="name"
           innerRadius={60}
           outerRadius={100}
-          paddingAngle={2}
+          paddingAngle={data.length > 1 ? 2 : 0}
+          startAngle={90}
+          endAngle={-269.99}
+          isAnimationActive={false}
         >
           {data.map((d, i) => (
             <Cell
@@ -90,11 +93,12 @@ export function TrendBars({ data }: { data: TrendPoint[] }) {
 }
 
 const tooltipStyle: React.CSSProperties = {
-  borderRadius: 8,
-  border: "1px solid rgba(120,120,120,0.3)",
+  borderRadius: 12,
+  border: "1px solid rgba(255,255,255,0.9)",
   fontSize: 12,
-  background: "rgba(23,23,23,0.95)",
-  color: "white",
+  background: "rgba(255,255,255,0.96)",
+  color: "#212121",
+  boxShadow: "0 10px 30px -12px rgba(28,55,110,0.35)",
 };
 
 function Empty({ children }: { children: React.ReactNode }) {

@@ -2,14 +2,24 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {
+  LayoutDashboard,
+  PlusCircle,
+  ScrollText,
+  BarChart3,
+  Settings,
+  LogOut,
+  Wallet,
+  type LucideIcon,
+} from "lucide-react";
 import { signOutAction } from "@/app/(app)/actions";
 
-const LINKS = [
-  { href: "/dashboard", label: "Home", icon: "🏠" },
-  { href: "/add", label: "Add", icon: "➕" },
-  { href: "/history", label: "History", icon: "📜" },
-  { href: "/report", label: "Report", icon: "📊" },
-  { href: "/settings", label: "Settings", icon: "⚙️" },
+const LINKS: { href: string; label: string; icon: LucideIcon }[] = [
+  { href: "/dashboard", label: "Home", icon: LayoutDashboard },
+  { href: "/add", label: "Add", icon: PlusCircle },
+  { href: "/history", label: "History", icon: ScrollText },
+  { href: "/report", label: "Report", icon: BarChart3 },
+  { href: "/settings", label: "Settings", icon: Settings },
 ];
 
 export function Nav({ userLabel }: { userLabel: string }) {
@@ -19,30 +29,45 @@ export function Nav({ userLabel }: { userLabel: string }) {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden w-56 shrink-0 flex-col border-r border-neutral-200 bg-white p-4 md:flex dark:border-neutral-800 dark:bg-neutral-900">
-        <div className="px-2 py-3 text-lg font-semibold tracking-tight">
-          💸 Cashflow
+      <aside className="lg-card sticky top-4 m-4 hidden w-56 shrink-0 flex-col self-start p-4 md:flex" style={{ height: "calc(100dvh - 2rem)" }}>
+        <div className="flex items-center gap-2 px-2 py-3">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl lg-primary">
+            <Wallet size={18} />
+          </span>
+          <span className="text-lg font-bold tracking-tight text-ink">Cashflow</span>
         </div>
-        <nav className="mt-4 flex flex-col gap-1">
-          {LINKS.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
-                isActive(l.href)
-                  ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900"
-                  : "text-neutral-600 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
-              }`}
-            >
-              <span>{l.icon}</span>
-              {l.label}
-            </Link>
-          ))}
+
+        <nav className="mt-4 flex flex-col gap-1.5">
+          {LINKS.map((l) => {
+            const Icon = l.icon;
+            const active = isActive(l.href);
+            return (
+              <Link
+                key={l.href}
+                href={l.href}
+                className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
+                  active
+                    ? "lg-primary"
+                    : "text-ink-muted hover:bg-primary-light/50 hover:text-ink"
+                }`}
+              >
+                <Icon size={18} strokeWidth={2.2} />
+                {l.label}
+              </Link>
+            );
+          })}
         </nav>
-        <div className="mt-auto border-t border-neutral-200 pt-4 dark:border-neutral-800">
-          <p className="truncate px-2 text-xs text-neutral-500">{userLabel}</p>
+
+        <div className="mt-auto">
+          <div className="lg-inset flex items-center gap-2 px-3 py-2.5">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-xs font-bold text-white">
+              {userLabel.charAt(0).toUpperCase()}
+            </span>
+            <p className="truncate text-xs font-medium text-ink-muted">{userLabel}</p>
+          </div>
           <form action={signOutAction}>
-            <button className="mt-2 w-full rounded-lg px-3 py-2 text-left text-sm text-neutral-600 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800">
+            <button className="mt-2 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm font-medium text-ink-muted transition hover:bg-danger/10 hover:text-danger">
+              <LogOut size={16} strokeWidth={2.2} />
               Sign out
             </button>
           </form>
@@ -50,21 +75,23 @@ export function Nav({ userLabel }: { userLabel: string }) {
       </aside>
 
       {/* Mobile bottom tab bar */}
-      <nav className="fixed inset-x-0 bottom-0 z-10 flex border-t border-neutral-200 bg-white/95 backdrop-blur md:hidden dark:border-neutral-800 dark:bg-neutral-900/95">
-        {LINKS.map((l) => (
-          <Link
-            key={l.href}
-            href={l.href}
-            className={`flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] ${
-              isActive(l.href)
-                ? "text-neutral-900 dark:text-white"
-                : "text-neutral-400"
-            }`}
-          >
-            <span className="text-lg">{l.icon}</span>
-            {l.label}
-          </Link>
-        ))}
+      <nav className="lg-card fixed inset-x-3 bottom-3 z-10 flex justify-around rounded-2xl px-1 py-1.5 md:hidden">
+        {LINKS.map((l) => {
+          const Icon = l.icon;
+          const active = isActive(l.href);
+          return (
+            <Link
+              key={l.href}
+              href={l.href}
+              className={`flex flex-1 flex-col items-center gap-0.5 rounded-xl py-1.5 text-[11px] font-medium transition ${
+                active ? "lg-primary" : "text-ink-muted"
+              }`}
+            >
+              <Icon size={18} strokeWidth={2.2} />
+              {l.label}
+            </Link>
+          );
+        })}
       </nav>
     </>
   );

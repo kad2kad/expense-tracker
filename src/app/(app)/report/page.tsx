@@ -1,3 +1,4 @@
+import { ArrowUp, ArrowDown } from "lucide-react";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { formatIDR } from "@/lib/money";
@@ -105,10 +106,10 @@ export default async function ReportPage({
   }
 
   return (
-    <div className="mx-auto max-w-3xl p-6">
+    <div className="mx-auto max-w-3xl p-5 md:p-8">
       <header className="mb-6">
-        <h1 className="text-2xl font-semibold tracking-tight">Report</h1>
-        <p className="mt-1 text-sm text-neutral-500">
+        <h1 className="text-2xl font-bold tracking-tight text-ink">Report</h1>
+        <p className="mt-1 text-sm text-ink-muted">
           Spending insights for {monthLabel(month)}.
         </p>
       </header>
@@ -132,14 +133,13 @@ export default async function ReportPage({
       </section>
 
       {/* Comparison line */}
-      <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm dark:border-neutral-800 dark:bg-neutral-900">
+      <div className="lg-card mt-4 flex flex-wrap gap-x-6 gap-y-1 px-4 py-3 text-sm">
         <Delta label="Spending vs last month" pct={spendDelta} invert />
         <Delta label="Income vs last month" pct={pctChange(income, prevIncome)} />
         {biggest && (
-          <span className="text-neutral-500">
-            Biggest: <span className="font-medium text-neutral-800 dark:text-neutral-200">
-              {biggest.name}
-            </span>{" "}
+          <span className="text-ink-muted">
+            Biggest:{" "}
+            <span className="font-semibold text-ink">{biggest.name}</span>{" "}
             ({formatIDR(biggest.value)})
           </span>
         )}
@@ -168,15 +168,11 @@ function Kpi({
   tone: "in" | "out" | "net";
 }) {
   const color =
-    tone === "in"
-      ? "text-emerald-600"
-      : tone === "out"
-        ? "text-red-600"
-        : "text-neutral-900 dark:text-white";
+    tone === "in" ? "text-success" : tone === "out" ? "text-danger" : "text-ink";
   return (
-    <div className="rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
-      <p className="text-xs font-medium text-neutral-500">{label}</p>
-      <p className={`mt-1 text-lg font-semibold ${color}`}>{value}</p>
+    <div className="lg-card p-4">
+      <p className="text-xs font-semibold text-ink-muted">{label}</p>
+      <p className={`mt-1 text-lg font-bold ${color}`}>{value}</p>
     </div>
   );
 }
@@ -191,16 +187,22 @@ function Delta({
   invert?: boolean;
 }) {
   if (pct === null) {
-    return <span className="text-neutral-500">{label}: —</span>;
+    return <span className="text-ink-muted">{label}: —</span>;
   }
   const up = pct >= 0;
   // For spending, up is bad (invert the color meaning).
   const good = invert ? !up : up;
+  const Arrow = up ? ArrowUp : ArrowDown;
   return (
-    <span className="text-neutral-500">
+    <span className="text-ink-muted">
       {label}:{" "}
-      <span className={good ? "font-medium text-emerald-600" : "font-medium text-red-600"}>
-        {up ? "▲" : "▼"} {Math.abs(pct).toFixed(0)}%
+      <span
+        className={`inline-flex items-center gap-0.5 font-semibold ${
+          good ? "text-success" : "text-danger"
+        }`}
+      >
+        <Arrow size={13} strokeWidth={2.5} />
+        {Math.abs(pct).toFixed(0)}%
       </span>
     </span>
   );
@@ -208,8 +210,8 @@ function Delta({
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
-      <h2 className="mb-2 text-sm font-semibold">{title}</h2>
+    <div className="lg-card p-4">
+      <h2 className="mb-2 text-sm font-bold text-ink">{title}</h2>
       {children}
     </div>
   );

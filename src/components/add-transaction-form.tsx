@@ -2,12 +2,24 @@
 
 import { useActionState, useMemo, useRef, useState } from "react";
 import {
+  ArrowDownCircle,
+  ArrowUpCircle,
+  Repeat,
+  Plus,
+  ChevronDown,
+  ChevronUp,
+  Trash2,
+  Check,
+  type LucideIcon,
+} from "lucide-react";
+import {
   createTransaction,
   updateTransaction,
   deleteTransaction,
 } from "@/lib/tx-actions";
 import type { TxFormState } from "@/lib/tx-form";
 import { TX_KINDS, TX_KIND_LABELS, type TxKind } from "@/lib/constants";
+import { categoryIcon } from "@/lib/category-icons";
 import { formatNumber, parseAmount } from "@/lib/money";
 
 export type CategoryOption = { id: string; name: string; icon: string | null };
@@ -28,6 +40,12 @@ export type InitialTx = {
 };
 
 const emptyState: TxFormState = {};
+
+const KIND_ICON: Record<TxKind, LucideIcon> = {
+  EXPENSE: ArrowDownCircle,
+  INCOME: ArrowUpCircle,
+  DEBT_LOAN: Repeat,
+};
 
 function todayISO() {
   const d = new Date();
@@ -51,9 +69,7 @@ export function AddTransactionForm({
   const [kind, setKind] = useState<TxKind>(initial?.kind ?? "EXPENSE");
   const [categoryId, setCategoryId] = useState<string>(initial?.categoryId ?? "");
   const [customMode, setCustomMode] = useState(false);
-  const [amount, setAmount] = useState(
-    initial ? String(initial.amount) : "",
-  ); // digits only
+  const [amount, setAmount] = useState(initial ? String(initial.amount) : "");
   const [showDetails, setShowDetails] = useState(
     !!initial &&
       !!(initial.location || initial.withWhom || initial.counterparty || initial.dueDate),
@@ -77,40 +93,41 @@ export function AddTransactionForm({
 
   return (
     <form action={formAction} className="space-y-6">
-      {/* hidden controlled values */}
       <input type="hidden" name="kind" value={kind} />
       <input type="hidden" name="categoryId" value={customMode ? "" : categoryId} />
       {isEdit && <input type="hidden" name="transactionId" value={initial!.id} />}
 
       {state.error && (
-        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600 dark:bg-red-950/50 dark:text-red-400">
+        <p className="rounded-xl bg-danger/10 px-3 py-2 text-sm font-medium text-danger">
           {state.error}
         </p>
       )}
 
       {/* Kind segmented control */}
-      <div className="grid grid-cols-3 gap-1 rounded-xl bg-neutral-100 p-1 dark:bg-neutral-800">
-        {TX_KINDS.map((k) => (
-          <button
-            key={k}
-            type="button"
-            onClick={() => switchKind(k)}
-            className={`rounded-lg px-2 py-2 text-sm font-medium transition ${
-              kind === k
-                ? "bg-white text-neutral-900 shadow-sm dark:bg-neutral-950 dark:text-white"
-                : "text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200"
-            }`}
-          >
-            {TX_KIND_LABELS[k]}
-          </button>
-        ))}
+      <div className="lg-inset grid grid-cols-3 gap-1 p-1">
+        {TX_KINDS.map((k) => {
+          const Icon = KIND_ICON[k];
+          return (
+            <button
+              key={k}
+              type="button"
+              onClick={() => switchKind(k)}
+              className={`flex items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-sm font-semibold transition ${
+                kind === k ? "lg-raised text-ink" : "text-ink-muted hover:text-ink"
+              }`}
+            >
+              <Icon size={15} strokeWidth={2.3} />
+              {TX_KIND_LABELS[k]}
+            </button>
+          );
+        })}
       </div>
 
       {/* Amount */}
       <div>
-        <label className="mb-1 block text-sm font-medium">Amount</label>
-        <div className="flex items-center rounded-lg border border-neutral-300 focus-within:border-neutral-900 focus-within:ring-2 focus-within:ring-neutral-900/10 dark:border-neutral-700 dark:focus-within:border-white">
-          <span className="pl-3 text-sm text-neutral-500">Rp</span>
+        <label className="mb-1.5 block text-sm font-semibold text-ink">Amount</label>
+        <div className="lg-input flex items-center px-1">
+          <span className="pl-3 text-sm font-medium text-ink-muted">Rp</span>
           <input
             name="amount"
             inputMode="numeric"
@@ -118,7 +135,7 @@ export function AddTransactionForm({
             placeholder="0"
             value={formatted}
             onChange={(e) => setAmount(e.target.value.replace(/[^\d]/g, ""))}
-            className="w-full bg-transparent px-2 py-2 text-lg font-semibold outline-none"
+            className="w-full bg-transparent px-2 py-2.5 text-lg font-bold text-ink outline-none"
           />
         </div>
         <FieldError msg={err?.amountRaw?.[0]} />
@@ -126,10 +143,11 @@ export function AddTransactionForm({
 
       {/* Category chips */}
       <div>
-        <label className="mb-2 block text-sm font-medium">Category</label>
+        <label className="mb-2 block text-sm font-semibold text-ink">Category</label>
         <div className="flex flex-wrap gap-2">
           {categories.map((c) => {
             const active = !customMode && categoryId === c.id;
+            const Icon = categoryIcon(c.name);
             return (
               <button
                 key={c.id}
@@ -138,13 +156,11 @@ export function AddTransactionForm({
                   setCategoryId(c.id);
                   setCustomMode(false);
                 }}
-                className={`rounded-full border px-3 py-1.5 text-sm transition ${
-                  active
-                    ? "border-neutral-900 bg-neutral-900 text-white dark:border-white dark:bg-white dark:text-neutral-900"
-                    : "border-neutral-300 hover:bg-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition ${
+                  active ? "lg-primary" : "lg-raised text-ink-muted hover:text-ink"
                 }`}
               >
-                {c.icon ? `${c.icon} ` : ""}
+                <Icon size={15} strokeWidth={2.2} />
                 {c.name}
               </button>
             );
@@ -155,13 +171,12 @@ export function AddTransactionForm({
               setCustomMode(true);
               setCategoryId("");
             }}
-            className={`rounded-full border border-dashed px-3 py-1.5 text-sm transition ${
-              customMode
-                ? "border-neutral-900 bg-neutral-100 dark:border-white dark:bg-neutral-800"
-                : "border-neutral-400 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+            className={`flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium transition ${
+              customMode ? "lg-primary" : "lg-raised text-ink-muted hover:text-ink"
             }`}
           >
-            + Custom
+            <Plus size={15} strokeWidth={2.4} />
+            Custom
           </button>
         </div>
         {customMode && (
@@ -170,7 +185,7 @@ export function AddTransactionForm({
             autoFocus
             placeholder="New category name"
             maxLength={40}
-            className="mt-3 w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm outline-none focus:border-neutral-900 dark:border-neutral-700 dark:bg-neutral-950 dark:focus:border-white"
+            className="lg-input mt-3 w-full px-3 py-2.5 text-sm"
           />
         )}
         <FieldError msg={err?.categoryId?.[0]} />
@@ -178,32 +193,32 @@ export function AddTransactionForm({
 
       {/* Note */}
       <div>
-        <label className="mb-1 block text-sm font-medium">Note</label>
+        <label className="mb-1.5 block text-sm font-semibold text-ink">Note</label>
         <textarea
           name="note"
           rows={2}
           maxLength={500}
           defaultValue={initial?.note ?? ""}
           placeholder="What was this for?"
-          className="w-full resize-none rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm outline-none focus:border-neutral-900 dark:border-neutral-700 dark:bg-neutral-950 dark:focus:border-white"
+          className="lg-input w-full resize-none px-3 py-2.5 text-sm"
         />
       </div>
 
       {/* Date */}
       <div>
-        <label className="mb-1 block text-sm font-medium">Date</label>
+        <label className="mb-1.5 block text-sm font-semibold text-ink">Date</label>
         <input
           name="date"
           type="date"
           defaultValue={initial?.date ?? todayISO()}
-          className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm outline-none focus:border-neutral-900 dark:border-neutral-700 dark:bg-neutral-950 dark:focus:border-white"
+          className="lg-input w-full px-3 py-2.5 text-sm"
         />
       </div>
 
       {/* Receipt image */}
       <div>
-        <label className="mb-1 block text-sm font-medium">
-          Receipt <span className="text-neutral-400">(optional)</span>
+        <label className="mb-1.5 block text-sm font-semibold text-ink">
+          Receipt <span className="font-normal text-ink-muted">(optional)</span>
         </label>
         <input
           ref={fileRef}
@@ -214,7 +229,7 @@ export function AddTransactionForm({
             const f = e.target.files?.[0];
             setPreview(f ? URL.createObjectURL(f) : null);
           }}
-          className="block w-full text-sm text-neutral-500 file:mr-3 file:rounded-lg file:border-0 file:bg-neutral-100 file:px-3 file:py-2 file:text-sm file:font-medium hover:file:bg-neutral-200 dark:file:bg-neutral-800 dark:hover:file:bg-neutral-700"
+          className="block w-full text-sm text-ink-muted file:mr-3 file:rounded-lg file:border-0 file:bg-primary file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-primary-dark"
         />
         {preview && (
           <>
@@ -222,10 +237,10 @@ export function AddTransactionForm({
             <img
               src={preview}
               alt="Receipt preview"
-              className="mt-3 h-32 w-auto rounded-lg border border-neutral-200 object-cover dark:border-neutral-800"
+              className="mt-3 h-32 w-auto rounded-xl object-cover shadow-md"
             />
             {isEdit && preview === initial?.imageUrl && (
-              <p className="mt-1 text-xs text-neutral-400">
+              <p className="mt-1 text-xs text-ink-muted">
                 Current receipt — upload a new file to replace it.
               </p>
             )}
@@ -239,13 +254,14 @@ export function AddTransactionForm({
         <button
           type="button"
           onClick={() => setShowDetails((s) => !s)}
-          className="text-sm font-medium text-neutral-600 underline underline-offset-4 dark:text-neutral-300"
+          className="flex items-center gap-1 text-sm font-semibold text-primary hover:text-primary-dark"
         >
-          {showDetails ? "− Hide details" : "+ Add details"}
+          {showDetails ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          {showDetails ? "Hide details" : "Add details"}
         </button>
 
         {showDetails && (
-          <div className="mt-4 space-y-4 rounded-xl border border-neutral-200 p-4 dark:border-neutral-800">
+          <div className="lg-inset mt-4 space-y-4 p-4">
             <TextField
               name="location"
               label="Location"
@@ -268,20 +284,22 @@ export function AddTransactionForm({
                   defaultValue={initial?.counterparty}
                 />
                 <div>
-                  <label className="mb-1 block text-sm font-medium">Due date</label>
+                  <label className="mb-1.5 block text-sm font-semibold text-ink">
+                    Due date
+                  </label>
                   <input
                     name="dueDate"
                     type="date"
                     defaultValue={initial?.dueDate ?? ""}
-                    className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm outline-none focus:border-neutral-900 dark:border-neutral-700 dark:bg-neutral-950 dark:focus:border-white"
+                    className="lg-input w-full px-3 py-2.5 text-sm"
                   />
                 </div>
-                <label className="flex items-center gap-2 text-sm">
+                <label className="flex items-center gap-2 text-sm font-medium text-ink">
                   <input
                     name="isSettled"
                     type="checkbox"
                     defaultChecked={initial?.isSettled ?? false}
-                    className="h-4 w-4"
+                    className="h-4 w-4 accent-primary"
                   />
                   Already settled
                 </label>
@@ -294,8 +312,9 @@ export function AddTransactionForm({
       <button
         type="submit"
         disabled={pending}
-        className="w-full rounded-lg bg-neutral-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-neutral-700 disabled:opacity-60 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
+        className="lg-primary flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold"
       >
+        <Check size={17} strokeWidth={2.5} />
         {pending ? "Saving…" : isEdit ? "Save changes" : "Save transaction"}
       </button>
 
@@ -318,8 +337,9 @@ function DeleteButton() {
           e.preventDefault();
         }
       }}
-      className="w-full rounded-lg border border-red-300 px-4 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50 dark:border-red-900 dark:hover:bg-red-950/40"
+      className="flex w-full items-center justify-center gap-2 rounded-xl border border-danger/40 bg-danger/5 px-4 py-2.5 text-sm font-semibold text-danger transition hover:bg-danger/10"
     >
+      <Trash2 size={16} strokeWidth={2.2} />
       Delete transaction
     </button>
   );
@@ -338,13 +358,13 @@ function TextField({
 }) {
   return (
     <div>
-      <label className="mb-1 block text-sm font-medium">{label}</label>
+      <label className="mb-1.5 block text-sm font-semibold text-ink">{label}</label>
       <input
         name={name}
         type="text"
         placeholder={placeholder}
         defaultValue={defaultValue ?? ""}
-        className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm outline-none focus:border-neutral-900 dark:border-neutral-700 dark:bg-neutral-950 dark:focus:border-white"
+        className="lg-input w-full px-3 py-2.5 text-sm"
       />
     </div>
   );
@@ -352,5 +372,5 @@ function TextField({
 
 function FieldError({ msg }: { msg?: string }) {
   if (!msg) return null;
-  return <p className="mt-1 text-xs text-red-600">{msg}</p>;
+  return <p className="mt-1 text-xs font-medium text-danger">{msg}</p>;
 }

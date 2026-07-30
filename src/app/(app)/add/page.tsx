@@ -24,12 +24,12 @@ export default async function AddPage() {
   }
 
   return (
-    <div className="mx-auto max-w-lg p-6">
-      <h1 className="text-2xl font-semibold tracking-tight">Add transaction</h1>
-      <p className="mt-1 text-sm text-neutral-500">
+    <div className="mx-auto max-w-lg p-5 md:p-8">
+      <h1 className="text-2xl font-bold tracking-tight text-ink">Add transaction</h1>
+      <p className="mt-1 text-sm text-ink-muted">
         Record an expense, income, or debt / loan.
       </p>
-      <div className="mt-6">
+      <div className="lg-card mt-6 p-5 md:p-6">
         <AddTransactionForm categoriesByKind={grouped} />
       </div>
     </div>

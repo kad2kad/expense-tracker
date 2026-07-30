@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export function ReportControls({
   label,
@@ -19,19 +20,19 @@ export function ReportControls({
       <button
         type="button"
         onClick={() => go(prev)}
-        className="rounded-lg border border-neutral-300 px-3 py-1.5 text-sm hover:bg-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-800"
+        className="lg-raised flex items-center gap-1 rounded-xl px-3 py-1.5 text-sm font-medium text-ink"
         aria-label="Previous month"
       >
-        ‹ Prev
+        <ChevronLeft size={16} /> Prev
       </button>
-      <span className="text-sm font-semibold">{label}</span>
+      <span className="text-sm font-bold text-ink">{label}</span>
       <button
         type="button"
         onClick={() => go(next)}
-        className="rounded-lg border border-neutral-300 px-3 py-1.5 text-sm hover:bg-neutral-100 dark:border-neutral-700 dark:hover:bg-neutral-800"
+        className="lg-raised flex items-center gap-1 rounded-xl px-3 py-1.5 text-sm font-medium text-ink"
         aria-label="Next month"
       >
-        Next ›
+        Next <ChevronRight size={16} />
       </button>
     </div>
   );

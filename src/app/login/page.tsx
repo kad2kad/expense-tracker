@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useActionState } from "react";
+import { Wallet } from "lucide-react";
 import { login, type LoginState } from "./actions";
 
 const initial: LoginState = {};
@@ -10,15 +11,20 @@ export default function LoginPage() {
   const [state, formAction, pending] = useActionState(login, initial);
 
   return (
-    <main className="flex min-h-dvh items-center justify-center bg-neutral-50 p-4 dark:bg-neutral-950">
-      <div className="w-full max-w-sm rounded-2xl border border-neutral-200 bg-white p-8 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-        <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
-        <p className="mt-1 text-sm text-neutral-500">
-          Sign in to your expense tracker.
-        </p>
+    <main className="flex min-h-dvh items-center justify-center p-4">
+      <div className="lg-card w-full max-w-sm p-8">
+        <div className="mb-5 flex items-center gap-2">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl lg-primary">
+            <Wallet size={20} />
+          </span>
+          <span className="text-lg font-bold tracking-tight text-ink">Cashflow</span>
+        </div>
+
+        <h1 className="text-2xl font-bold tracking-tight text-ink">Welcome back</h1>
+        <p className="mt-1 text-sm text-ink-muted">Sign in to your expense tracker.</p>
 
         {state.error && (
-          <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600 dark:bg-red-950/50 dark:text-red-400">
+          <p className="mt-4 rounded-xl bg-danger/10 px-3 py-2 text-sm font-medium text-danger">
             {state.error}
           </p>
         )}
@@ -35,15 +41,15 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={pending}
-            className="w-full rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-neutral-700 disabled:opacity-60 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
+            className="lg-primary w-full rounded-xl px-4 py-2.5 text-sm font-bold"
           >
             {pending ? "Signing in…" : "Sign in"}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-neutral-500">
+        <p className="mt-6 text-center text-sm text-ink-muted">
           No account?{" "}
-          <Link href="/signup" className="font-medium text-neutral-900 underline dark:text-white">
+          <Link href="/signup" className="font-semibold text-primary hover:text-primary-dark">
             Sign up
           </Link>
         </p>
@@ -58,11 +64,8 @@ function Field({
 }: { label: string } & React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <label className="block">
-      <span className="mb-1 block text-sm font-medium">{label}</span>
-      <input
-        {...props}
-        className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm outline-none focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10 dark:border-neutral-700 dark:bg-neutral-950 dark:focus:border-white"
-      />
+      <span className="mb-1.5 block text-sm font-semibold text-ink">{label}</span>
+      <input {...props} className="lg-input w-full px-3 py-2.5 text-sm" />
     </label>
   );
 }

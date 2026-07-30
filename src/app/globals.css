@@ -1,26 +1,143 @@
 @import "tailwindcss";
 
+/* ---------------------------------------------------------------------------
+   Design system — "Liquid Glass" on Material Design colors
+   Palette (from the design ref):
+     Material Blue 500  #2196F3
+     Text Gray          #212121
+     Surface            #FFFFFF / #FAFAFA
+   Look: solid (non-transparent) frosted surfaces with layered soft shadows,
+   a subtle top highlight, and gentle gradients — iOS glass feel, light-first.
+--------------------------------------------------------------------------- */
+
+@theme {
+  --color-primary: #2196f3;
+  --color-primary-dark: #1976d2;
+  --color-primary-light: #e3f2fd;
+
+  --color-ink: #212121;
+  --color-ink-muted: #667487;
+
+  --color-surface: #ffffff;
+  --color-canvas: #e9eef7;
+
+  --color-success: #22b07d;
+  --color-danger: #ef5f5f;
+  --color-warn: #f0a935;
+
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+
+  --radius-glass: 1.5rem;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  color-scheme: light;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Layered shadows that give the glass its depth. */
+  --lg-shadow:
+    0 12px 30px -14px rgba(28, 55, 110, 0.3),
+    0 4px 10px -6px rgba(28, 55, 110, 0.14);
+  --lg-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background:
+    radial-gradient(1200px 800px at 12% -10%, #f2f6ff 0%, transparent 55%),
+    linear-gradient(160deg, #eef2fb 0%, #e4eaf6 100%);
+  background-attachment: fixed;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+@layer components {
+  /* Primary raised glass surface (cards, panels). */
+  .lg-card {
+    background: linear-gradient(145deg, #ffffff 0%, #f2f6fd 100%);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: var(--radius-glass);
+    box-shadow: var(--lg-shadow), var(--lg-highlight);
+  }
+
+  /* Soft pressed / inset surface (tracks, wells). */
+  .lg-inset {
+    background: #e9eef7;
+    border-radius: 1rem;
+    box-shadow:
+      inset 2px 2px 6px rgba(28, 55, 110, 0.12),
+      inset -2px -2px 6px rgba(255, 255, 255, 0.9);
+  }
+
+  /* Small raised chip/button (neutral). */
+  .lg-raised {
+    background: linear-gradient(145deg, #ffffff, #eef3fb);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow:
+      0 6px 14px -8px rgba(28, 55, 110, 0.35),
+      var(--lg-highlight);
+  }
+  .lg-raised:hover {
+    background: linear-gradient(145deg, #ffffff, #e7eefb);
+  }
+
+  /* Primary (Material Blue) action. */
+  .lg-primary {
+    background: linear-gradient(145deg, #4aa8f6 0%, #1e88e5 100%);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow:
+      0 12px 22px -10px rgba(33, 150, 243, 0.6),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  }
+  .lg-primary:hover {
+    background: linear-gradient(145deg, #2196f3 0%, #1976d2 100%);
+  }
+  .lg-primary:disabled {
+    opacity: 0.6;
+  }
+
+  /* Form field. */
+  .lg-input {
+    background: #f4f7fd;
+    border: 1px solid rgba(170, 190, 220, 0.55);
+    border-radius: 0.85rem;
+    box-shadow: inset 1px 1px 3px rgba(28, 55, 110, 0.07);
+    color: var(--color-ink);
+    outline: none;
+    transition:
+      border-color 0.15s,
+      box-shadow 0.15s;
+  }
+  .lg-input::placeholder {
+    color: #9aa7bd;
+  }
+  .lg-input:focus,
+  .lg-input:focus-within {
+    border-color: var(--color-primary);
+    box-shadow:
+      0 0 0 3px rgba(33, 150, 243, 0.18),
+      inset 1px 1px 3px rgba(28, 55, 110, 0.05);
+  }
+
+  /* Loading skeleton shimmer. */
+  .lg-skeleton {
+    background: linear-gradient(100deg, #dfe6f1 28%, #eef2fa 48%, #dfe6f1 68%);
+    background-size: 200% 100%;
+    animation: lg-shimmer 1.4s ease-in-out infinite;
+    border-radius: 0.6rem;
+  }
+}
+
+@keyframes lg-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lg-skeleton {
+    animation: none;
+  }
 }
